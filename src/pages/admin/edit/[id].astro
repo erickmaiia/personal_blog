@@ -19,7 +19,7 @@ const post = (await getCollection("blog")).find((post) => post.id === id);
   <section class="form-container">
     <div class="form-card">
       <h2 class="form-title">Edit Post</h2>
-      <form method="post" action={`/admin/edit/${id}`}>
+      <form id="editForm" method="post" action={`/admin/edit/${id}`}>
         <label for="title">Title</label>
 
         <input
@@ -41,7 +41,13 @@ const post = (await getCollection("blog")).find((post) => post.id === id);
               src={post?.data.heroImage}
               alt="Current Image"
             />
-            <input type="file" id="heroImg" name="heroImg" accept="image/*" />
+            <input
+              type="file"
+              id="heroImg"
+              name="heroImg"
+              accept="image/*"
+              style="display: none;"
+            />
           </div>
         </div>
 
@@ -50,55 +56,46 @@ const post = (await getCollection("blog")).find((post) => post.id === id);
           {post?.body}
         </textarea>
 
-        <button type="submit" class="btn-submit">Save Changes</button>
+        <button type="button" id="btn-save" class="btn-submit"
+          >Save Changes</button
+        >
       </form>
     </div>
   </section>
 </AdminLayout>
 
+<script>
+  import { updatePost } from "../../../scripts/updatePost.js";
+  import { handleImageChange } from "../../../scripts/handleImageChange.js";
+
+  const heroImgElement = document.getElementById("heroImg");
+  if (heroImgElement) {
+    heroImgElement.addEventListener("change", handleImageChange);
+  }
+
+  const saveButton = document.getElementById("btn-save");
+  const editForm = document.getElementById("editForm") as HTMLFormElement;
+
+  if (saveButton && editForm) {
+    saveButton.addEventListener("click", async () => {
+      const formData = new FormData(editForm);
+      await updatePost("{id}", formData); // Substitua "{id}" pelo ID do post dinâmico
+    });
+  }
+</script>
+
 <style>
-  input[type="file"] {
-    display: none; /* Oculta o input real */
+  .hero-img-display {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
-  .image-container {
-    position: relative;
-  }
+
   img {
     width: 300px;
     height: 200px;
     object-fit: cover;
     object-position: center;
-    display: block;
     cursor: pointer;
   }
 </style>
-
-<script>
-  // Seleciona o input de arquivo e a imagem de visualização
-  const fileInput = document.getElementById(
-    "heroImg"
-  ) as HTMLInputElement | null;
-  const imagePreview = document.getElementById(
-    "imagePreview"
-  ) as HTMLImageElement | null;
-
-  if (fileInput && imagePreview) {
-    // Função para mostrar a imagem selecionada
-    fileInput.addEventListener("change", (event: Event) => {
-      const input = event.target as HTMLInputElement;
-      const file = input.files ? input.files[0] : null;
-
-      if (file) {
-        const reader = new FileReader();
-
-        reader.onload = (e: ProgressEvent<FileReader>) => {
-          if (e.target) {
-            imagePreview.src = e.target.result as string;
-          }
-        };
-
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-</script>

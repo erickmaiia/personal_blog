@@ -6,7 +6,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
   <section class="form-container">
     <div class="form-card">
       <h2 class="form-title">Add Post</h2>
-      <form method="post">
+      <form id="addForm">
         <label for="title">Title</label>
         <input
           type="text"
@@ -18,8 +18,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
         <div class="hero-img-display">
           <label>Current Image:</label>
-
-          <!-- Container de imagem e input de arquivo -->
           <div class="image-container">
             <img
               id="imagePreview"
@@ -27,7 +25,13 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
               alt="Current Image"
               onclick="document.getElementById('heroImg').click();"
             />
-            <input type="file" id="heroImg" name="heroImg" accept="image/*" />
+            <input
+              type="file"
+              id="heroImg"
+              name="heroImg"
+              accept="image/*"
+              style="display: none;"
+            />
           </div>
         </div>
 
@@ -38,56 +42,45 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           placeholder="Enter the post content"
           required></textarea>
 
-        <button type="submit" class="btn-submit">Add Post</button>
+        <button type="button" id="btn-add" class="btn-submit">Add Post</button>
       </form>
     </div>
   </section>
 
+  <script>
+    import { handleImageChange } from "../../scripts/handleImageChange.js";
+    import { createPost } from "../../scripts/createPost.js";
+
+    const heroImgElement = document.getElementById("heroImg");
+    if (heroImgElement) {
+      heroImgElement.addEventListener("change", handleImageChange);
+    }
+
+    const addButton = document.getElementById("btn-add");
+    const addForm = document.getElementById("addForm") as HTMLFormElement;
+
+    if (addButton && addForm) {
+      addButton.addEventListener("click", async (e) => {
+        e.preventDefault(); // Previne o envio padrão do formulário
+        const formData = new FormData(addForm);
+        await createPost(formData);
+      });
+    }
+  </script>
+
   <style>
-    input[type="file"] {
-      display: none; /* Oculta o input real */
+    .hero-img-display {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
-    .image-container {
-      position: relative;
-    }
+
     img {
       width: 300px;
       height: 200px;
       object-fit: cover;
       object-position: center;
-      display: block;
       cursor: pointer;
     }
   </style>
-
-  <script>
-    // Seleção dos elementos do DOM com tipos específicos
-    const heroImgInput = document.getElementById(
-      "heroImg"
-    ) as HTMLInputElement | null;
-    const imagePreview = document.getElementById(
-      "imagePreview"
-    ) as HTMLImageElement | null;
-
-    // Checando se os elementos existem antes de adicionar o eventListener
-    if (heroImgInput && imagePreview) {
-      heroImgInput.addEventListener("change", (event: Event) => {
-        const input = event.target as HTMLInputElement;
-        const file = input.files ? input.files[0] : null;
-
-        if (file) {
-          const reader = new FileReader();
-
-          reader.onload = (e: ProgressEvent<FileReader>) => {
-            if (e.target) {
-              imagePreview.src = e.target.result as string;
-              imagePreview.style.display = "block";
-            }
-          };
-
-          reader.readAsDataURL(file);
-        }
-      });
-    }
-  </script>
 </AdminLayout>

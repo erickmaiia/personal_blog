@@ -1,50 +1,64 @@
 ---
 import { getCollection } from "astro:content";
 import AdminLayout from "../../layouts/AdminLayout.astro";
+import { deletePost } from "../../scripts/deletePost.js"; // Importando a função
 
 const posts = (await getCollection("blog")).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 ---
 
-<AdminLayout title={"Admin Dashboard"} description={"Admin Dashboard"}>
-  {
-    (
-      <section class="admin-container">
-        <div class="admin-card">
-          <div class="title-container">
-            <h2 class="admin-title">Personal Blog</h2>
-            <a href="/admin/new-post">
-              <button class="btn-add">+ Add</button>
-            </a>
-          </div>
-          <ul class="posts-list">
-            {posts.map((post) => (
-              <li class="post-item">
-                <div class="post-content">
-                  <div>
-                    <h5 class="post-title">{post.data.title}</h5>
-                    <p class="post-date">
-                      {post.data.pubDate.toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div class="post-actions">
-                    <a href={`/admin/edit/${post.id}`}>
-                      <button class="btn btn-edit">Edit</button>
-                    </a>
-                    <button
-                      class="btn btn-delete"
-                      onclick={`deletePost('${post.id}')`}
-                    >
-                      Delete
-                    </button>
-                  </div>
+<AdminLayout title="Admin Dashboard" description="Admin Dashboard">
+  <section class="admin-container">
+    <div class="admin-card">
+      <div class="title-container">
+        <h2 class="admin-title">Personal Blog</h2>
+        <a href="/admin/new-post">
+          <button class="btn-add">+ Add</button>
+        </a>
+      </div>
+      <ul class="posts-list">
+        {
+          posts.map((post) => (
+            <li class="post-item">
+              <div class="post-content">
+                <div>
+                  <h5 class="post-title">{post.data.title}</h5>
+                  <p class="post-date">
+                    {post.data.pubDate.toLocaleDateString()}
+                  </p>
                 </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-    )
-  }
+                <div class="post-actions">
+                  <a href={`/admin/edit/${post.id}`}>
+                    <button class="btn btn-edit">Edit</button>
+                  </a>
+                  <button
+                    class="btn btn-delete"
+                    id="deletePost"
+                    value={post.id}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
 </AdminLayout>
+
+<script>
+  // Importando a função deletePost
+  import { deletePost } from "../../scripts/deletePost.js";
+
+  // Adicionando o evento de clique no botão de deletar
+
+  const deleteButtons = document.querySelectorAll("#deletePost");
+  deleteButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      deletePost((button as HTMLButtonElement).value);
+    });
+  });
+</script>
