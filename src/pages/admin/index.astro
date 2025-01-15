@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import AdminLayout from "../../layouts/AdminLayout.astro";
-import { deletePost } from "../../scripts/deletePost.js"; // Importando a função
 
 const posts = (await getCollection("blog")).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
@@ -14,7 +13,7 @@ const posts = (await getCollection("blog")).sort(
       <div class="title-container">
         <h2 class="admin-title">Personal Blog</h2>
         <a href="/admin/new-post">
-          <button class="btn-add">+ Add</button>
+          <button class="btn-submit">+ Add</button>
         </a>
       </div>
       <ul class="posts-list">

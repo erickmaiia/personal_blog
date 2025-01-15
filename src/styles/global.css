@@ -44,6 +44,15 @@ html.dark {
   --code-text-color: var(--code-text-color-dark);
 }
 
+:root {
+  transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out;
+}
+
+body {
+  transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out,
+    transform 0.6s ease-in-out;
+}
+
 body {
   background-color: var(--background-color);
   color: var(--text-color);
